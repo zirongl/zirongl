@@ -2,7 +2,7 @@
 
 ## Microsoft Power BI
 ### BI Exercise - Office Space Optimization
-This is the exercise I prepared for a data analyst role. The data was given as fictitous data that represents I might encounter in the role. I was encouraged to explore the data and provide as many insights as I wish, and also use the creaticity in how I would present the data to a customer who has zero data literacy. The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/ZirongLiu_BI_Exercise_Relogix_DA.pdf).
+This is the exercise I prepared for a data analyst role. The data was given as fictitous data that represents I might encounter in the role. I was encouraged to explore the data and provide as many insights as I wish, and also use the creaticity in how I would present the data to a customer who has zero data literacy. The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Office%20Space%20Optimization_pbi_example.pdf).
 
 Exercise Questions:
 1. What is the average, max and all-time peak occupancy the busiest day for the Pension Department.
