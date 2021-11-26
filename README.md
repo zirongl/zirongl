@@ -1,4 +1,4 @@
-- Data Analyst Portfolio by Zirong Liu
+# Data Analytics Portfolio by Zirong Liu
 
 <!---
 zirongl/zirongl is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
