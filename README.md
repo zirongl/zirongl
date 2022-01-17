@@ -13,3 +13,6 @@ Exercise Questions:
 zirongl/zirongl is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 You can click the Preview link to take a look at your changes.
 --->
+
+## Queen's University APSC 401 Interdisciplinary Project
+The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Office%20Space%20Optimization_pbi_example.pdf).
