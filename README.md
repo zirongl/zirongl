@@ -15,4 +15,5 @@ You can click the Preview link to take a look at your changes.
 --->
 
 ## Queen's University APSC 401 Interdisciplinary Project
-The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Office%20Space%20Optimization_pbi_example.pdf).
+The PDF version of the final report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/APSC401_FinalReport.pdf).
+The PDF version of the final Power Point Presentation can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Canada's%20Energy%20Transition%20_FinalPresentation.pdf).
