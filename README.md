@@ -1,4 +1,4 @@
-# Data Analytics Portfolio by Zirong Liu
+# Portfolio by Zirong Liu
 
 ## Microsoft Power BI
 ### BI Exercise - Office Space Optimization
