@@ -23,5 +23,5 @@ The PDF version of the final Power Point Presentation can be accessed [here](htt
 ## Data Analyst Case Study 
 Red Cross DA Interview Scenario 
 
-The PDF version of the question can be accessed [here] (https://github.com/zirongl/zirongl/blob/main/Examples/RedCross_Written%20Interview%20Question-%20Data%20Analyst.pdf).
-The PDF version of my answer can be accessed [here] (https://github.com/zirongl/zirongl/blob/main/Examples/ZirongLiu___RedCrossQs.pdf).
+The PDF version of the question can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/RedCross_Written%20Interview%20Question-%20Data%20Analyst.pdf).
+The PDF version of my answer can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/ZirongLiu___RedCrossQs.pdf).
