@@ -19,3 +19,9 @@ Analyzed the impact of booming EVs on Alberta Oil Industry.
 
 The PDF version of the final report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/APSC401_FinalReport.pdf).
 The PDF version of the final Power Point Presentation can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Canada's%20Energy%20Transition%20_FinalPresentation.pdf).
+
+## Data Analyst Case Study 
+Red Cross DA Interview Scenario 
+
+The PDF version of the question can be accessed [here] ().
+The PDF version of my answer can be accessed [here] ().
