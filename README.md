@@ -1,5 +1,18 @@
 # Portfolio by Zirong Liu
 
+## Artificial Intelligence Project
+### Credit Card Fraud Detection
+Western University COMPSCI 9542 Final Project
+
+In response to the global challenge posed by credit card fraud, which incurs significant financial losses, this study explores the efficacy of integrating advanced machine learning techniques into fraud detection systems. Traditional detection methods, which often fall short against sophisticated and evolving fraud strategies, are enhanced by a suite of machine learning models, including logistic regression, decision trees, random forests, and deep neural networks. These models are chosen for their ability to handle large, imbalanced datasets and their proficiency in recognizing subtle patterns indicative of fraudulent activity.
+
+The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Credit_Card_Fraud_Detection.pdf). 
+The PDF version of the Logistic Regression code can be accessed[here](https://github.com/zirongl/zirongl/blob/main/Examples/Credit_Card_Fraud_Logistic_Regression.ipynb).
+The PDF version of the Random Forest code can be accessed[here](https://github.com/zirongl/zirongl/blob/main/Examples/Credit_Card_Fraud_Random_Forest.ipynb).
+The PDF version of the Neural Network code can be accessed[here](https://github.com/zirongl/zirongl/blob/main/Examples/Feed_Forward_Neural_Network.ipynb).
+The PDF version of the Gradient Boost code can be accessed[here](https://github.com/zirongl/zirongl/blob/main/Examples/Credit_Card_Fraud_Gradient_Boost.ipynb).
+The PDF version of the SVM code can be accessed[here](https://github.com/zirongl/zirongl/blob/main/Examples/Credit_Card_Detection_SVM.ipynb).
+
 ## Reinforcement learning Project
 ### Multiple Stock Trading System
 Western University COMPSCI 9170 Final Project
