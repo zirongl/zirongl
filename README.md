@@ -3,7 +3,9 @@
 ## Reinforcement learning Project
 ### Multiple Stock Trading System
 Western University COMPSCI 9170 Final Project
+
 Our study explores the use of Reinforcement Learning (RL) to optimize automated trading systems for the U.S. stock market, using a dataset of hourly historical stock data from Kaggle. We evaluate the performance and adaptability of three RL algorithms: Advantage Actor Critic (A2C), Deep Deterministic Policy Gradient (DDPG), and Proximal Policy Optimization (PPO), through a training and trading phase to test on unseen data. In particular, PPO shows a promising balance between stability and adaptability, which is essential in the volatile stock market, while DDPG shows better stability and A2C is promising in terms of earnings. Our research suggests that an ensemble approach may yield more robust trading strategies, and future work should focus on hybrid models, improved exploration techniques, and the incorporation of complex market indicators to improve the effectiveness of RL models in real-world trading applications. 
+
 The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Multi_Stock_Trading.pdf). 
 The PDF version of the code can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Code.ipynb).
 
