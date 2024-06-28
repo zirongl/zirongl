@@ -1,0 +1,370 @@
+---
+title: "FinalAnalysis"
+output: pdf_document
+date: "2023-12-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#import global libraries:
+library(lmtest)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(corrplot)
+library(MASS)
+library(faraway)
+library(caret)
+library(gbm)
+library(tidyr)
+set.seed(123)#set random seed
+```
+```{r}
+#load data from given file path
+file_path <- "Life Expectancy Data.csv"
+Data <- read.csv(file_path)
+
+#display the structure of data, and check if there's empty cells
+str(Data)
+colSums(is.na(Data))
+```
+
+```{r}
+#data cleaning: for columns with more than 200 null values, fill empty cells with median of this column
+Data$'GDP' <- ifelse(is.na(Data$'GDP'), median(Data$'GDP', na.rm = TRUE), Data$'GDP')
+Data$'Population' <- ifelse(is.na(Data$'Population'), median(Data$'Population', na.rm = TRUE), Data$'Population')
+Data$'Total.expenditure' <- ifelse(is.na(Data$'Total.expenditure'), 
+                                   median(Data$"Total.expenditure", na.rm = TRUE), Data$'Total.expenditure')
+Data$'Hepatitis B' <- ifelse(is.na(Data$'Hepatitis.B'), 
+                             median(Data$'Hepatitis.B', na.rm = TRUE), Data$'Hepatitis.B')
+
+#for status - developed/undeveloped, replace them with 0 and 1
+Data$'Status' <- ifelse(Data$'Status' == "Developed", 1, 0)
+
+#remove other rows with empty cells
+Data <- na.omit(Data)
+Data <- unique(Data)
+
+colSums(is.na(Data))
+nrow(Data)
+
+#choose random 1000 observations for this analysis
+#set.seed(123)
+#library(dplyr)
+Data <- sample_n(Data, 1000)
+nrow(Data)
+#Data <- data.frame(Data)
+
+#summarize data and display first few rows
+summary(Data)
+head(Data)
+```
+```{r}
+#visualize data:
+#numeric predictors
+numeric_columns <- names(Data[, sapply(Data, is.numeric) & names(Data) != "Life.expectancy"])
+
+#plot relationship btw predictors and Life expectancy
+plots <- lapply(numeric_columns, function(col) {
+  print(ggplot(Data, aes(x = Life.expectancy, y = !!sym(col))) +
+    geom_point() + xlab("Life Expectancy") + ylab(col) +
+    ggtitle(paste("Scatter Plot of Life Expectancy vs", col)) +
+    theme_minimal())
+})
+
+#density plot of life expectancy
+ggplot(Data, aes(x = Life.expectancy)) +
+  geom_density(fill = "skyblue", color = "navy") +
+  labs(title = "Density Plot of Life Expectancy",
+       x = "Life Expectancy",
+       y = "Density")
+```
+```{r}
+#from prev plot we can see some predictors has a significant relatonship with life.expectancy, pick them out:
+#Corelation
+correlation_with_life_expec <- cor(Data[, sapply(Data, is.numeric)], 
+                             Data$`Life.expectancy`, 
+                             use = "complete.obs")
+corrplot(correlation_with_life_expec, method = "color")
+print(correlation_with_life_expec)
+
+#select predictors with correlation abs value greater than 0.4
+selected_columns <- names(correlation_with_life_expec[abs(correlation_with_life_expec[, 1]) > 0.4, 1])
+print(selected_columns)
+```
+```{r}
+#split train/test set, only remove unused columns
+Data <- Data[, c(selected_columns)]
+head(Data)
+train_indices <- sample(1:nrow(Data), 0.8 * nrow(Data))
+train_data <- Data[train_indices, ]
+test_data <- Data[-train_indices, ]
+```
+```{r}
+#write two helper function that helps evaluating our model:
+evaluate_model <- function(model) {
+  #evaluation based on train set
+  print(summary(model))
+  #print(anova(model))
+  
+  #residual plot
+  #plot(fitted(model), resid(model), col = "grey", pch = 20,
+  #     xlab = "Fitted", ylab = "Residuals", main = "Residual model plot")
+  #abline(h = 0, col = "darkorange", lwd = 2)
+  plot(fitted(model), resid(model), col = "grey", pch = 20,
+     xlab = "Fitted", ylab = "Residuals", 
+     main = paste("Residual Plot -", deparse(substitute(model))))
+  abline(h = 0, col = "darkorange", lwd = 2)
+  
+  #BP test
+  print(bptest(model))
+
+  #Normal Q-Q Plot
+  qqnorm(resid(model), main = paste("Normal QQ Plot -", deparse(substitute(model))), col = "darkgrey")
+  qqline(resid(model), col = "dodgerblue", lwd = 2)
+
+  #SW normality test
+  print(shapiro.test(resid(model)))
+  
+  #MSE and R2
+  mse <- mean(resid(model)^2)
+  cat("Train Set MSE:", mse, "\n")
+  r_squared <- summary(model)$r.squared
+  cat("Train R-squared:", r_squared, "\n")
+}
+#evaluation for test set
+evaluate_test <- function(model, test_data) {
+  #predictions
+  predictions <- predict(model, newdata = test_data)
+  y = test_data$Life.expectancy
+  y_hat = predictions
+  SST = sum((y - mean(y)) ^ 2)
+  SSR = sum((y_hat - mean(y)) ^ 2)
+  SSE = sum((y - y_hat) ^ 2)
+  R2 <- 1 - (SSE / SST)
+
+  #calculate residual
+  residuals <- test_data$Life.expectancy - predictions
+  
+  #MSE calculation
+  mse <- mean(residuals^2, na.rm = TRUE)
+  
+  plot(test_data$Life.expectancy, y_hat, col = "blue", pch = 20,
+       xlab = "Observed Life Expectancy", ylab = "Predicted Life Expectancy",
+       main = "Test Set - Observed vs. Predicted Life Expectancy")
+  abline(0, 1, col = "red", lwd = 2)
+  
+  # Print results
+  cat("Test Set MSE:", mse, "\n")
+  cat("Test R-squared:", R2, "\n")
+}
+```
+
+```{r}
+#fit my first model - a multiple linear regression model with all predictors
+model_base <- lm(Life.expectancy ~ ., data = train_data)
+evaluate_model(model_base)
+
+#calculate SST etc and R2 for test set
+evaluate_test(model_base, test_data)
+```
+```{r}
+#the anova test shows there exist issue with predictors, so we do a VIF test
+
+vif_value <- car::vif(model_base)
+print(vif_value)
+```
+```{r}
+#hypothesis test for linearity between thiness 1.19 and thinness 5.9
+#H0: non exist, H1: exist - p = 2.2e-16 < 0.05
+colinear_model <- lm(thinness..1.19.years ~ thinness.5.9.years, data = train_data)
+summary(colinear_model)
+```
+```{r}
+#based on interpretation above, build next model, removing thinness 5.9 
+model_VIF_reduced <- lm(Life.expectancy ~ Adult.Mortality + BMI + HIV.AIDS + GDP + thinness..1.19.years + 
+               Income.composition.of.resources + Schooling, data = train_data)
+
+vif_value2 <- car::vif(model_VIF_reduced)
+print(vif_value2)
+```
+```{r}
+#this passes VIF test, so we
+train_data <- train_data[, !colnames(train_data) %in% c('thinness.5.9.years')]
+test_data <- test_data[, !colnames(test_data) %in% c('thinness.5.9.years')]
+head(train_data)
+head(test_data)
+```
+```{r}
+#evaluate this model:
+evaluate_model(model_VIF_reduced)
+evaluate_test(model_VIF_reduced, test_data)
+```
+```{r}
+#do a box plot to see if we should shift y values:
+boxcox_result <- boxcox(model_VIF_reduced, plotit = TRUE)
+```
+```{r}
+boxcox(model_VIF_reduced, lambda <- seq(1, 1.5, by = 0.05), plotit = TRUE)
+```
+```{r}
+#from the plot, use l = 0.5
+model_y_shift <- lm((((Life.expectancy ^ 1.3) - 1) /1.3) ~ ., data = train_data)
+evaluate_model(model_y_shift)
+evaluate_test(model_y_shift, test_data)
+```
+```{r}
+#from the catastratpic result we can see that including 1.3 shift is not a good idea.
+#here comes our next model with multiplying categorial variable
+model_categorial <- lm(Life.expectancy ~ Status + Adult.Mortality + BMI + HIV.AIDS + GDP + thinness..1.19.years 
+                       + Income.composition.of.resources + Schooling + I(Adult.Mortality*Status) + I(BMI*Status)
+                       + I(HIV.AIDS*Status) + I(GDP*Status) + I(thinness..1.19.years*Status)
+                       + I(Income.composition.of.resources*Status) + I(Schooling*Status),
+                       data = train_data)
+
+evaluate_model(model_categorial)
+evaluate_test(model_categorial, test_data)
+```
+```{r}
+anova(model_categorial)
+```
+```{r}
+#model quadratic: removed predictors with high anova pr, and added quadratic form
+model_quadratic <- lm(Life.expectancy ~ Status + Adult.Mortality + BMI + HIV.AIDS + GDP 
+                      + thinness..1.19.years + Income.composition.of.resources + Schooling + I(Adult.Mortality^2)
+                      + I(BMI^2) + I(HIV.AIDS^2) + I(GDP^2) + I(thinness..1.19.years^2) 
+                      + I(Income.composition.of.resources^2) + I(Schooling^2) + I(thinness..1.19.years*Status)
+                      + I(Schooling*Status), data = train_data)
+evaluate_model(model_quadratic)
+evaluate_test(model_quadratic, test_data)
+```
+```{r}
+#use this as full model, do a AIC and BIC backward selection:
+model_AIC <- step(model_quadratic, direction = "backward", trace = 0)
+model_BIC <- step(model_quadratic, direction = "backward", k = log(nrow(train_data)), trace = 0)
+
+evaluate_model(model_AIC)
+evaluate_model(model_BIC)
+# Print number of predictors for AIC-selected model
+num_predictors_AIC <- sum(!is.na(coef(model_AIC)))
+cat("Number of predictors in AIC-selected model:", num_predictors_AIC, "\n")
+
+# Print number of predictors for BIC-selected model
+num_predictors_BIC <- sum(!is.na(coef(model_BIC)))
+cat("Number of predictors in BIC-selected model:", num_predictors_BIC, "\n")
+
+```
+```{r}
+# Ridge Regression with Cross-Validation
+library(glmnet)
+
+# Extract predictors and response variable
+X <- model.matrix(model_quadratic)[, -1]
+y <- train_data$Life.expectancy
+
+# Create a grid of lambda values to search over
+lambda_values <- 10^seq(10, -2, length = 100)
+
+# Perform ridge regression with cross-validation
+ridge_cv_model <- cv.glmnet(X, y, alpha = 0, lambda = lambda_values)
+
+# Print the best lambda selected by cross-validation
+best_lambda <- ridge_cv_model$lambda.min
+cat("Best Lambda:", best_lambda, "\n")
+
+# Print the coefficients of the ridge model with the best lambda
+ridge_coefficients <- coef(ridge_cv_model, s = best_lambda)
+print(ridge_coefficients)
+```
+```{r}
+#construct a ridge model with best lambda from CV, 
+ridge_lambda <- 0.01
+
+#train model
+model_ridge <- glmnet(X, y, alpha = 0, lambda = ridge_lambda)
+
+#format corresponding test dataset 
+X_test <- model.matrix(model_quadratic, data = test_data)[, -1]
+y_test <- test_data$Life.expectancy
+
+#prediction
+y_hat <- predict(model_ridge, s = ridge_lambda, newx = X_test)
+
+
+R2 <- 1 - sum((y_test - y_hat)^2) / sum((y_test - mean(y_test))^2)
+MSE <- mean((y_test - y_hat)^2)
+
+plot(y_test, y_hat, col = "blue", pch = 20,
+     xlab = "Observed Life Expectancy", ylab = "Predicted Life Expectancy",
+     main = "Test Set - Observed vs. Predicted Life Expectancy")
+abline(0, 1, col = "red", lwd = 2)
+  
+
+cat("Test Set MSE:", MSE, "\n")
+cat("Test Set R-squared:", R2, "\n")
+```
+```{r}
+library(gbm)
+
+# Create the boosting model
+boost_model <- gbm(Life.expectancy ~ ., data = train_data, distribution = "gaussian", n.trees = 100, interaction.depth = 3)
+# Predictions on the test set
+boost_predictions <- predict(boost_model, newdata = test_data)
+
+# Plot observed vs. predicted values
+plot(test_data$Life.expectancy, boost_predictions, col = "blue",
+     xlab = "Observed", ylab = "Predicted",
+     main = "Observed vs. Predicted (Boosting)")
+
+# Add a diagonal line for reference
+abline(a = 0, b = 1, col = "red", lwd = 2)
+
+# Calculate MSE
+boost_mse <- mean((test_data$Life.expectancy - boost_predictions)^2)
+cat("Boosting MSE:", boost_mse, "\n")
+
+# Calculate R^2
+boost_r_squared <- 1 - (sum((test_data$Life.expectancy - boost_predictions)^2) / sum((test_data$Life.expectancy - mean(test_data$Life.expectancy))^2))
+cat("Boosting R^2:", boost_r_squared, "\n")
+```
+```{r}
+#
+# Load required library for bagging
+library(randomForest)
+
+# Create the bagging model
+bag_model <- randomForest(Life.expectancy ~ Status + Adult.Mortality + BMI + HIV.AIDS + GDP 
+                      + thinness..1.19.years + Income.composition.of.resources + Schooling + I(Adult.Mortality^2)
+                      + I(BMI^2) + I(HIV.AIDS^2) + I(GDP^2) + I(thinness..1.19.years^2) 
+                      + I(Income.composition.of.resources^2) + I(Schooling^2) + I(thinness..1.19.years*Status)
+                      + I(Schooling*Status), data = train_data, ntree = 50)
+
+# Evaluate the bagging model
+bag_predictions <- predict(bag_model, newdata = test_data)
+
+# Print model summary
+print(bag_model)
+
+# Calculate R^2 for bagging
+bagging_r_squared <- 1 - (sum((test_data$Life.expectancy - bag_predictions)^2) / sum((test_data$Life.expectancy - mean(test_data$Life.expectancy))^2))
+cat("Bagging R^2:", bagging_r_squared, "\n")
+
+# Calculate MSE for bagging
+bagging_mse <- mean((test_data$Life.expectancy - bag_predictions)^2)
+cat("Bagging MSE:", bagging_mse, "\n")
+
+# Observed vs. Predicted plot for bagging
+plot(test_data$Life.expectancy, bag_predictions, col = "blue",
+     xlab = "Observed", ylab = "Predicted",
+     main = "Observed vs. Predicted (Bagging)")
+
+# Add a diagonal line for reference
+abline(a = 0, b = 1, col = "red", lwd = 2)
+
+
+```
+
+
