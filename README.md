@@ -44,7 +44,11 @@ This is the exercise I prepared for a data analyst role. The data was given as f
 Exercise Questions:
 1. What is the average, max and all-time peak occupancy the busiest day for the Pension Department.
 2. What room type and size is most used.
-3. How many and what spaces in teh portfolio are never used. 
+3. How many and what spaces in teh portfolio are never used.
+
+## Tableau / Data Visualization
+### Canadian Household Consumption Expenditure - (2019 Q1 – 2023 Q3)
+This is a data visulization practice with using Tableau for the data visualization part. The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Assignment1_Tableau.pdf).
 
 <!---
 zirongl/zirongl is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
