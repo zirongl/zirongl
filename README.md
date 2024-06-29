@@ -22,6 +22,21 @@ Our study explores the use of Reinforcement Learning (RL) to optimize automated 
 The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Multi_Stock_Trading.pdf). 
 The PDF version of the code can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Code.ipynb).
 
+## Statistical Learning Project
+### Statistical Analysis on Factors Influencing Life Expectancy
+Western University MDA 9159 Final Project
+
+The Kaggle data originates from two significant sources: the Global Health Observatory (GHO)
+data repository, a division of the World Health Organization (WHO), and economic data from the
+United Nations. The data is concentrated on the years 2000 to 2015, a pivotal period for healthcare
+development. In total, it compiles information on 193 countries, resulting in a dataset with 22
+columns and 2938 rows. These columns encompass various aspects, such as life expectancy, health
+factors, and economic indicators, categorized under headings like immunization, mortality,
+economy, and social factors.
+
+The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/STAT_Final_Report_MLZL.pdf). 
+The PDF version of the R Markdown can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Final.pdf).
+
 ## Microsoft Power BI / Data Visualization
 ### BI Exercise - Office Space Optimization
 This is the exercise I prepared for a data analyst role. The data was given as fictitous data that represents I might encounter in the role. I was encouraged to explore the data and provide as many insights as I wish, and also use the creaticity in how I would present the data to a customer who has zero data literacy. The PDF version of the report can be accessed [here](https://github.com/zirongl/zirongl/blob/main/Examples/Office%20Space%20Optimization_pbi_example.pdf).
